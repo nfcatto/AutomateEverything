@@ -1,9 +1,42 @@
-An open-source version of popular automation softwares;this is intended to have a UI where you can drag and drop events to avoid repeating the same task over and over again!
+# Automate Everything
 
+An open-source automation tool: define rules that watch for conditions
+(processes, files, time) and run actions (launch programs, run commands)
+when they're met. Windows-first, Linux planned.
 
-**Planned Features:**
+## Status
 
-1. Drag-and-drop UI system
-2. Event-polling--allows the software to look for events to start a sequence
-3. Works on both Windows and Linux(Windows is my priority for now)
-4. And more...
+Early development. The process watcher + launcher backend and a NiceGUI
+test console are working. The rule editor and drag-and-drop UI are next.
+
+## Architecture
+
+- `watch.py` — process detection and launch logic
+- `automation_service.py` — threaded backend; owns the watcher loop,
+  subprocess management, and an in-memory event log
+- `app.py` — NiceGUI console; polls the service for snapshots, never
+  touches `psutil` or `subprocess` directly
+- `simulated_app.py` / `simulated_launch.py` — stand-ins for testing
+
+## Requirements
+
+- Python 3.10+
+- `pip install psutil nicegui`
+
+## Run
+
+    python app.py
+
+Open http://localhost:8080. Click **Run demo** to start the watcher and
+the simulated target; the watcher launches `simulated_launch.py` when it
+detects the target process.
+
+CLI-only equivalent: `python watch.py`, then run `python simulated_app.py`
+in another terminal.
+
+## Roadmap
+
+1. Rules as data (`rules.json`) with a condition/action registry
+2. Rule editor in the UI
+3. Drag-and-drop rule builder
+4. Linux support
